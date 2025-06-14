@@ -50,6 +50,7 @@ param OSVersion string = '2022-datacenter-azure-edition'
 
 var tags = {
   'azd-env-name': environmentName
+  
 }
 
 // Organize resources in a resource group
@@ -71,5 +72,43 @@ module resources './lb1.bicep' = {
     adminPassword: adminPassword
     vmSize: vmSize
     OSVersion: OSVersion
+  }
+}
+
+//now create the second resource group
+resource rg2 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: 'rg-lb2-${environmentName}'
+  location: location
+  tags: tags
+}
+//invoke the resources.bicep file for the second resource group
+module resources2 './lb2.bicep' = {
+  scope: rg2
+  name: 'resourcesDeployment2'
+  params: {
+    location: location
+    tags: tags
+    environmentName: environmentName
+    adminUsername: adminUsername
+    adminPassword: adminPassword
+    vmSize: vmSize
+
+  }
+}
+
+resource rg3 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: 'rg-tm-${environmentName}'
+  location: location
+  tags: tags
+}
+
+
+module trafficManager './tm.bicep' = {  
+  scope: rg3
+  name: 'trafficManagerDeployment'
+  params: {
+    environmentName: environmentName
+    tags: tags
+    uniqueDnsName: 'tm-${uniqueString(rg3.id, subscription().subscriptionId)}'
   }
 }
