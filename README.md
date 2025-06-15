@@ -23,18 +23,7 @@
 - microsoft.network/publicIPAddresses: (for LB, Bastion, etc.)
 - microsoft.compute/virtualmachines/extensions: GuestAttestation, InstallWebServer, MDE.Windows
 
-## 2. Azure Traffic Manager Deployment (Resource Group: rg-tm-{env})
-**Key Resources:**
-- Traffic Manager Profile
-- App Service Plans (multiple regions)
-- Web Apps (multiple regions)
-
-**Sample Resources:**
-- microsoft.network/trafficmanagerprofiles: TMProfile-{env}
-- microsoft.web/serverfarms: TMLabAppSvcPlan-CentralUS, TMLabAppSvcPlan-germanywestcentral, TMLabAppSvcPlan-ukwest
-- microsoft.web/sites: TMLabWebApp-ldl-CentralUS, TMLabWebApp-ldl-germanywestcentral, TMLabWebApp-ldl-ukwest
-
-## 3. Azure Application Gateway Deployment (Resource Group: rg-lb2-{env})
+## 2. Azure Application Gateway Deployment (Resource Group: rg-lb2-{env})
 **Key Resources:**
 - Application Gateway
 - Virtual Machines (VMs) and OS Disks
@@ -48,6 +37,17 @@
 - microsoft.compute/disks: gwvm1_OsDisk, gwvm2_OsDisk
 - microsoft.network/networkInterfaces: net-int1
 - microsoft.compute/virtualmachines/extensions: IIS, MDE.Windows
+
+## 3. Azure Traffic Manager Deployment (Resource Group: rg-tm-{env})
+**Key Resources:**
+- Traffic Manager Profile
+- App Service Plans (multiple regions)
+- Web Apps (multiple regions)
+
+**Sample Resources:**
+- microsoft.network/trafficmanagerprofiles: TMProfile-{env}
+- microsoft.web/serverfarms: TMLabAppSvcPlan-CentralUS, TMLabAppSvcPlan-germanywestcentral, TMLabAppSvcPlan-ukwest
+- microsoft.web/sites: TMLabWebApp-ldl-CentralUS, TMLabWebApp-ldl-germanywestcentral, TMLabWebApp-ldl-ukwest
 
 ---
 For more information about each template and deployment, see the quickstart articles linked above.
