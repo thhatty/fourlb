@@ -19,7 +19,7 @@ param tags object = {
 }
 
 
-var virtualMachineName = 'gatewawyexample'
+var virtualMachineName = 'gwvm'
 var virtualNetworkName = '${environmentName}-vnet2'
 var networkInterfaceName = 'net-int'
 var ipconfigName = 'ipconfig'
