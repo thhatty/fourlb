@@ -1,49 +1,53 @@
+# Demos and Deployed Azure Resources
+
+## 1. Azure Load Balancer Deployment (Resource Group: rg-lb1-{env})
+
+**Key Resources:**
+- Virtual Machines (VMs) and OS Disks
+- Load Balancer (Standard)
+- Network Interfaces (NICs)
+- Network Security Group (NSG)
+- Virtual Network (VNet)
+- Bastion Host
+- Public IP Addresses
+- VM Extensions (Web Server, Guest Attestation, Defender)
+
+**Sample Resources:**
+- microsoft.compute/virtualmachines: {env}-vm1, {env}-vm2, {env}-vm3
+- microsoft.compute/disks: {env}-vm1_OsDisk, {env}-vm2_OsDisk, {env}-vm3_OsDisk
+- microsoft.network/loadBalancers: (Standard LB)
+- microsoft.network/networkInterfaces: (NICs for each VM)
+- microsoft.network/networkSecurityGroups: (NSG)
+- microsoft.network/virtualNetworks: (VNet)
+- microsoft.network/bastionHosts: (Bastion)
+- microsoft.network/publicIPAddresses: (for LB, Bastion, etc.)
+- microsoft.compute/virtualmachines/extensions: GuestAttestation, InstallWebServer, MDE.Windows
+
+## 2. Azure Traffic Manager Deployment (Resource Group: rg-tm-{env})
+**Key Resources:**
+- Traffic Manager Profile
+- App Service Plans (multiple regions)
+- Web Apps (multiple regions)
+
+**Sample Resources:**
+- microsoft.network/trafficmanagerprofiles: TMProfile-{env}
+- microsoft.web/serverfarms: TMLabAppSvcPlan-CentralUS, TMLabAppSvcPlan-germanywestcentral, TMLabAppSvcPlan-ukwest
+- microsoft.web/sites: TMLabWebApp-ldl-CentralUS, TMLabWebApp-ldl-germanywestcentral, TMLabWebApp-ldl-ukwest
+
+## 3. Azure Application Gateway Deployment (Resource Group: rg-lb2-{env})
+**Key Resources:**
+- Application Gateway
+- Virtual Machines (VMs) and OS Disks
+- Network Interfaces (NICs)
+- Public IP Addresses
+- VM Extensions (IIS, Defender)
+
+**Sample Resources:**
+- microsoft.network/applicationgateways: myAppGateway
+- microsoft.compute/virtualmachines: gwvm1, gwvm2
+- microsoft.compute/disks: gwvm1_OsDisk, gwvm2_OsDisk
+- microsoft.network/networkInterfaces: net-int1
+- microsoft.compute/virtualmachines/extensions: IIS, MDE.Windows
+
 ---
-description: This template creates an Internet-facing load-balancer, load balancing rules, and three VMs for the backend pool with each VM in a redundant zone.
-page_type: sample
-products:
-- azure
-- azure-resource-manager
-urlFragment: load-balancer-standard-create
-languages:
-- bicep
-- json
----
-# Create a standard load-balancer
-
-[Original Source] (https://learn.microsoft.com/en-us/azure/load-balancer/quickstart-load-balancer-standard-public-bicep?tabs=CLI)
-
-
-
-![Azure Public Test Date](https://azurequickstartsservice.blob.core.windows.net/badges/quickstarts/microsoft.network/load-balancer-standard-create/PublicLastTestDate.svg)
-![Azure Public Test Result](https://azurequickstartsservice.blob.core.windows.net/badges/quickstarts/microsoft.network/load-balancer-standard-create/PublicDeployment.svg)
-
-![Azure US Gov Last Test Date](https://azurequickstartsservice.blob.core.windows.net/badges/quickstarts/microsoft.network/load-balancer-standard-create/FairfaxLastTestDate.svg)
-![Azure US Gov Last Test Result](https://azurequickstartsservice.blob.core.windows.net/badges/quickstarts/microsoft.network/load-balancer-standard-create/FairfaxDeployment.svg)
-
-![Best Practice Check](https://azurequickstartsservice.blob.core.windows.net/badges/quickstarts/microsoft.network/load-balancer-standard-create/BestPracticeResult.svg)
-![Cred Scan Check](https://azurequickstartsservice.blob.core.windows.net/badges/quickstarts/microsoft.network/load-balancer-standard-create/CredScanResult.svg)
-
-![Bicep Version](https://azurequickstartsservice.blob.core.windows.net/badges/quickstarts/microsoft.network/load-balancer-standard-create/BicepVersion.svg)
-
-[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fazure-quickstart-templates%2Fmaster%2Fquickstarts%2Fmicrosoft.network%2Fload-balancer-standard-create%2Fazuredeploy.json)
-[![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.svg?sanitize=true)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fazure-quickstart-templates%2Fmaster%2Fquickstarts%2Fmicrosoft.network%2Fload-balancer-standard-create%2Fazuredeploy.json)
-
-**This template provides an example for how to deploy a Standard Load Balancer.**
-
-The template creates and configures the following Azure resources:
-
-- A standard Load Balancer
-- A Network Security Group
-- A Virtual Network
-- Three NICs associated with the backend pool of the load balancer
-- Three virtual machines with each vm in a different zone
-- An Azure Bastion host to manage the virtual machines
-- Create outbound rules and outbound pool for virtual machines
-
-For more information about this template, see the quickstart articles:
-
-- [Quickstart: Create a public load balancer to load balance VMs using the Azure portal](https://docs.microsoft.com/azure/load-balancer/quickstart-load-balancer-standard-public-portal)
-- [Quickstart: Create a public load balancer to load balance VMs by using an ARM template](https://docs.microsoft.com/azure/load-balancer/quickstart-load-balancer-standard-public-template)
-
-`Tags: Microsoft.Network/networkInterfaces, Microsoft.Compute/virtualMachines/extensions, CustomScriptExtension, Microsoft.Compute/virtualMachines, Microsoft.Network/virtualNetworks/subnets, Microsoft.Network/bastionHosts, Microsoft.Network/publicIPAddresses, Microsoft.Network/loadBalancers, Microsoft.Network/networkSecurityGroups, Microsoft.Network/virtualNetworks`
+For more information about each template and deployment, see the quickstart articles linked above.
