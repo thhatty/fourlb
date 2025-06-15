@@ -1,8 +1,53 @@
-# Demos and Deployed Azure Resources
+# Trainer Demo Deploy: Load Balancer, Application Gateway, and Traffic Manager
 
-## 1. Azure Load Balancer Deployment (Resource Group: rg-lb1-{env})
+## Prerequisites
+To run these demos, ensure you have the following installed locally:
+- Azure Developer CLI (`azd`)
 
-**Key Resources:**
+## Overview
+This Trainer Demo Deploy template provides three Azure infrastructure demos:
+
+1. **Azure Load Balancer Deployment**: Demonstrates a standard load balancer distributing traffic across VMs in different zones.
+2. **Azure Application Gateway Deployment**: Shows an application gateway with backend VMs and network resources.
+3. **Azure Traffic Manager Deployment**: Illustrates global traffic distribution using Traffic Manager and multi-region web apps.
+
+
+## Architecture
+Each demo provisions a set of Azure resources to illustrate core networking and traffic management concepts. Architecture diagrams and flowcharts can be found in the `demoguide` folder (add diagrams as needed).
+
+## Deployment
+1. Create a new folder for your demo environment:
+   ```sh
+   mkdir my-demo
+   cd my-demo
+   ```
+2. Initialize the deployment with this template:
+   ```sh
+   azd init -t <path-or-repo-to-this-template>
+   ```
+3. Deploy the resources:
+   ```sh
+   azd up
+   ```
+
+## Usage
+After deployment, you can demonstrate the following scenarios:
+
+### 1. Azure Load Balancer Demo
+- Access the public IP of the load balancer to see traffic distributed across VMs.
+- Use Bastion Host for secure VM access.
+
+### 2. Azure Application Gateway Demo
+- Access the Application Gateway's frontend IP to test routing and backend pool health.
+
+### 3. Azure Traffic Manager Demo
+- Use the Traffic Manager DNS name to observe global traffic distribution and failover.
+
+Refer to the `demoguide/demoguide.md` for detailed, step-by-step instructions for each demo.
+
+## Deployed Azure Resources
+
+### Azure Load Balancer Deployment (Resource Group: rg-lb1-{env})
 - Virtual Machines (VMs) and OS Disks
 - Load Balancer (Standard)
 - Network Interfaces (NICs)
@@ -12,42 +57,23 @@
 - Public IP Addresses
 - VM Extensions (Web Server, Guest Attestation, Defender)
 
-**Sample Resources:**
-- microsoft.compute/virtualmachines: {env}-vm1, {env}-vm2, {env}-vm3
-- microsoft.compute/disks: {env}-vm1_OsDisk, {env}-vm2_OsDisk, {env}-vm3_OsDisk
-- microsoft.network/loadBalancers: (Standard LB)
-- microsoft.network/networkInterfaces: (NICs for each VM)
-- microsoft.network/networkSecurityGroups: (NSG)
-- microsoft.network/virtualNetworks: (VNet)
-- microsoft.network/bastionHosts: (Bastion)
-- microsoft.network/publicIPAddresses: (for LB, Bastion, etc.)
-- microsoft.compute/virtualmachines/extensions: GuestAttestation, InstallWebServer, MDE.Windows
-
-## 2. Azure Application Gateway Deployment (Resource Group: rg-lb2-{env})
-**Key Resources:**
+### Azure Application Gateway Deployment (Resource Group: rg-lb2-{env})
 - Application Gateway
 - Virtual Machines (VMs) and OS Disks
 - Network Interfaces (NICs)
 - Public IP Addresses
 - VM Extensions (IIS, Defender)
 
-**Sample Resources:**
-- microsoft.network/applicationgateways: myAppGateway
-- microsoft.compute/virtualmachines: gwvm1, gwvm2
-- microsoft.compute/disks: gwvm1_OsDisk, gwvm2_OsDisk
-- microsoft.network/networkInterfaces: net-int1
-- microsoft.compute/virtualmachines/extensions: IIS, MDE.Windows
-
-## 3. Azure Traffic Manager Deployment (Resource Group: rg-tm-{env})
-**Key Resources:**
+### Azure Traffic Manager Deployment (Resource Group: rg-tm-{env})
 - Traffic Manager Profile
 - App Service Plans (multiple regions)
 - Web Apps (multiple regions)
 
-**Sample Resources:**
-- microsoft.network/trafficmanagerprofiles: TMProfile-{env}
-- microsoft.web/serverfarms: TMLabAppSvcPlan-CentralUS, TMLabAppSvcPlan-germanywestcentral, TMLabAppSvcPlan-ukwest
-- microsoft.web/sites: TMLabWebApp-ldl-CentralUS, TMLabWebApp-ldl-germanywestcentral, TMLabWebApp-ldl-ukwest
+## Contributing
+Contributions to enhance these demos are welcome. Please submit issues and pull requests.
 
----
-For more information about each template and deployment, see the quickstart articles linked above.
+## License
+This project is licensed under the MIT License.
+
+## About
+This repository contains Trainer Demo Deploy templates for Azure networking and traffic management scenarios. For more information, see the `demoguide` folder and Azure Quickstart documentation.
