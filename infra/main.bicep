@@ -47,11 +47,48 @@ param vmSize string = 'Standard_B2ats_v2'
 ])
 param OSVersion string = '2022-datacenter-azure-edition'
 
+@description('The current user id. Will be supplied by azd')
+param currentUserId string = newGuid()
 
 var tags = {
   'azd-env-name': environmentName
-  
 }
+
+var resourceUniquifier = toLower(uniqueString(subscription().id, environmentName, location))
+
+//Common Resource Group for common resources
+resource rgCommon 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: 'rg-common-${environmentName}'
+  location: location
+  tags: tags
+}
+
+module vault 'br/public:avm/res/key-vault/vault:0.11.1' = {
+  scope: rgCommon
+  name: 'vaultDeployment'
+  params: {
+    name: take('kv-${environmentName}-${resourceUniquifier}',24)
+    enablePurgeProtection: false
+    location: rgCommon.location
+    tags: tags
+    secrets: [
+      {
+        name: 'adminPassword'
+        value: adminPassword
+      }
+
+    ]
+    roleAssignments: [
+      {
+        roleDefinitionIdOrName: 'Key Vault Secrets Officer'
+        principalId: currentUserId
+      }
+    ]
+  }
+}
+
+
+
 
 // Organize resources in a resource group
 resource rg1 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -109,6 +146,9 @@ module trafficManager './tm.bicep' = {
   params: {
     environmentName: environmentName
     tags: tags
-    uniqueDnsName: 'tm-${uniqueString(rg3.id, subscription().subscriptionId)}'
+    uniqueDnsName: 'tm-${resourceUniquifier}'
   }
 }
+
+
+output AZURE_KEY_VAULT_NAME string = vault.outputs.name

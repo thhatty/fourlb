@@ -5,12 +5,32 @@
     "environmentName": {
       "value": "${AZURE_ENV_NAME}"
     },
+
     "adminUsername": {
-      "value": "GEN-UNIQUE"
+      "value": "vmadmin",
+      "metadata": {
+        "description": "The username for the virtual machines"
+      }
+    },
+
+
+    "adminPassword": {
+      "value": "$(secretOrRandomPassword ${AZURE_KEY_VAULT_NAME} adminPassword)",
+      "metadata": {
+        "description": "The password for the virtual machines",
+        "type": "securestring"
+      }
     },
 
     "location": {
       "value": "${AZURE_LOCATION}"
+    },
+    
+    "currentUserId": {
+      "value": "${AZURE_PRINCIPAL_ID}",
+      "metadata": {
+        "description": "The current user id"
+      }
     }
   }
 }
