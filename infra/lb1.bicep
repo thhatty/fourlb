@@ -63,8 +63,10 @@ var securityProfileJson = {
 }
 var lbName = '${environmentName}-lb'
 var lbSkuName = 'Standard'
-var lbPublicIpAddressName = '${environmentName}-lbPublicIP'
-var lbFrontEndName = 'LoadBalancerFrontEnd'
+var lbinboundPublicIpAddressName = '${environmentName}-lbinboundPublicIP'
+var lboutboundPublicIpAddressName = '${environmentName}-lboutboundPublicIP'
+var lbinboundFrontEndName = 'LoadBalancerFrontEnd'
+var lboutbound = 'LoadBalancerOutboundIP'
 var lbBackendPoolName = 'LoadBalancerBackEndPool'
 var lbProbeName = 'loadBalancerHealthProbe'
 var nsgName = '${environmentName}-nsg1'
@@ -83,8 +85,6 @@ var extensionVersion = '1.0'
 var maaTenantName = 'GuestAttestation'
 var maaEndpoint = substring('emptyString', 0, 0)
 var ascReportingEndpoint = substring('emptystring', 0, 0)
-var natGatewayName = '${environmentName}-natgateway'
-var natGatewayPublicIPAddressName = '${environmentName}-natPublicIP'
 
 resource project_vm_1_networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = [for i in range(0, 3): {
   name: '${environmentName}-vm${(i + 1)}-networkInterface'
@@ -212,34 +212,7 @@ resource projectName_vm_1_3_GuestAttestation 'Microsoft.Compute/virtualMachines/
   ]
 }]
 
-resource natGateway 'Microsoft.Network/natGateways@2021-05-01' = {
-  name: natGatewayName
-  location: location
-  sku: {
-    name: 'Standard'
-  }
-  properties: {
-    idleTimeoutInMinutes: 4
-    publicIpAddresses: [
-      {
-        id: natGatewayPublicIPAddress.id
-      }
-    ]
-  }
-}
 
-resource natGatewayPublicIPAddress 'Microsoft.Network/publicIPAddresses@2021-05-01' = {
-  name: natGatewayPublicIPAddressName
-  location: location
-  sku: {
-    name: 'Standard'
-  }
-  properties: {
-    publicIPAddressVersion: 'IPv4'
-    publicIPAllocationMethod: 'Static'
-    idleTimeoutInMinutes: 4
-  }
-}
 
 resource vNetName_bastionSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' = {
   parent: vNet
@@ -257,9 +230,7 @@ resource vNetName_vNetSubnetName 'Microsoft.Network/virtualNetworks/subnets@2021
   name: vNetSubnetName
   properties: {
     addressPrefix: vNetSubnetAddressPrefix
-    natGateway: {
-      id: natGateway.id
-    }
+    
   }
 }
 
@@ -305,10 +276,18 @@ resource lb 'Microsoft.Network/loadBalancers@2021-08-01' = {
   properties: {
     frontendIPConfigurations: [
       {
-        name: lbFrontEndName
+        name: lbinboundFrontEndName
         properties: {
           publicIPAddress: {
-            id: lbPublicIPAddress.id
+            id: lbinboundPublicIPAddress.id
+          }
+        }
+      }
+      {
+        name: lboutbound
+        properties: {
+          publicIPAddress: {
+            id: lboutboundPublicIPAddress.id
           }
         }
       }
@@ -323,7 +302,7 @@ resource lb 'Microsoft.Network/loadBalancers@2021-08-01' = {
         name: 'myHTTPRule'
         properties: {
           frontendIPConfiguration: {
-            id: resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', lbName, lbFrontEndName)
+            id: resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', lbName, lbinboundFrontEndName)
           }
           backendAddressPool: {
             id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', lbName, lbBackendPoolName)
@@ -342,6 +321,25 @@ resource lb 'Microsoft.Network/loadBalancers@2021-08-01' = {
         }
       }
     ]
+    outboundRules: [
+      {
+        name: 'outboundtraffic'
+        properties: {
+          frontendIPConfigurations: [{
+            id: resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', lbName, lboutbound)
+          }
+        ]
+          backendAddressPool: {
+            id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', lbName, lbBackendPoolName)
+          }
+          allocatedOutboundPorts: 64
+          enableTcpReset: true
+          idleTimeoutInMinutes: 4
+          protocol: 'tcp'
+        }
+      }
+
+    ]
     probes: [
       {
         name: lbProbeName
@@ -353,13 +351,23 @@ resource lb 'Microsoft.Network/loadBalancers@2021-08-01' = {
         }
       }
     ]
-    outboundRules: [
-    ]
+    
   }
 }
 
-resource lbPublicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
-  name: lbPublicIpAddressName
+resource lbinboundPublicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
+  name: lbinboundPublicIpAddressName
+  location: location
+  sku: {
+    name: lbSkuName
+  }
+  properties: {
+    publicIPAddressVersion: 'IPv4'
+    publicIPAllocationMethod: 'Static'
+  }
+}
+resource lboutboundPublicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
+  name: lboutboundPublicIpAddressName
   location: location
   sku: {
     name: lbSkuName

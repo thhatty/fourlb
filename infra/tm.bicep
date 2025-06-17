@@ -92,7 +92,7 @@ resource ExampleTMProfile 'Microsoft.Network/trafficManagerProfiles@2018-04-01' 
 resource ExampleTMProfile_Endpoint 'Microsoft.Network/trafficmanagerprofiles/AzureEndpoints@2022-04-01' = [
   for i in range(0, length(webAppLocations)): {
     parent: ExampleTMProfile
-    name: 'Endpoint${i}'
+    name: 'Endpoint-${webAppLocations[i]}'
     properties: {
       targetResourceId: resourceId('Microsoft.Web/Sites/', '${webAppNamePrefix}${webAppLocationSuffix[i]}')
       endpointStatus: 'Enabled'
