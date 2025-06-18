@@ -9,22 +9,35 @@ param tags object
 @description('Relative DNS profile name for the traffic manager profile, resulting FQDN will be <uniqueDnsName>.trafficmanager.net, and it must be globally unique.')
 param uniqueDnsName string
 
-var webAppNamePrefix = 'TMLabWebApp-${take(uniqueString(resourceGroup().id,subscription().subscriptionId),3)}-'
-var webAppLocations = [
+
+
+//change these in main for different locations 
+@description('List of locations to deploy web apps to.')
+param webAppLocations array = [
   'Central US'
   'Germany West Central'
   'UK West'
 ]
-var webAppLocationSuffix = [
-  'CentralUS'
+
+//change these in main for different locations 
+@description('Suffixes for each web app location, must match order of webAppLocations.')
+param webAppLocationSuffix array = [
+  'centralus'
   'germanywestcentral'
   'ukwest'
 ]
-var appSvcPlanNamePrefix = 'TMLabAppSvcPlan'
-var repoURL = 'https://github.com/pdtit/TrafficMgr'
-var branch = 'master'
 
+@description('Prefix for App Service Plan names.')
+param appSvcPlanNamePrefix string = 'TMLabAppSvcPlan'
 
+@description('Prefix for Web App names.')
+param webAppNamePrefix string = 'TMLabWebApp-${take(uniqueString(resourceGroup().id,subscription().subscriptionId),3)}-'
+
+@description('Repository URL for source control.')
+param repoURL string = 'https://github.com/pdtit/TrafficMgr'
+
+@description('Branch for source control.')
+param branch string = 'master'
 
 resource appSvcPlan 'Microsoft.Web/serverfarms@2024-11-01' = [
   for (item, i) in webAppLocations: {

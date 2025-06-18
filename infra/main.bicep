@@ -88,16 +88,12 @@ module vault 'br/public:avm/res/key-vault/vault:0.11.1' = {
 }
 
 
-
-
-// Organize resources in a resource group
 resource rg1 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: 'rg-lb1-${environmentName}'
   location: location
   tags: tags
 }
 
-//invoke the resources.bicep file
 module resources './lb1.bicep' = {
   scope: rg1
   name: 'resourcesDeployment'
@@ -109,16 +105,34 @@ module resources './lb1.bicep' = {
     adminPassword: adminPassword
     vmSize: vmSize
     OSVersion: OSVersion
+    lbName: '${environmentName}-lb'
+    lbSkuName: 'Standard'
+    lbinboundPublicIpAddressName: '${environmentName}-lbinboundPublicIP'
+    lboutboundPublicIpAddressName: '${environmentName}-lboutboundPublicIP'
+    lbinboundFrontEndName: 'LoadBalancerFrontEnd'
+    lboutbound: 'LoadBalancerOutboundIP'
+    lbBackendPoolName: 'LoadBalancerBackEndPool'
+    lbProbeName: 'loadBalancerHealthProbe'
+    nsgName: '${environmentName}-nsg1'
+    vNetName: '${environmentName}-vnet1'
+    vNetAddressPrefix: '10.1.0.0/16'
+    vNetSubnetName: 'BackendSubnet'
+    vNetSubnetAddressPrefix: '10.1.0.0/24'
+    bastionName: '${environmentName}-bastion'
+    bastionSubnetName: 'AzureBastionSubnet'
+    vNetBastionSubnetAddressPrefix: '10.1.1.0/24'
+    bastionPublicIPAddressName: '${environmentName}-bastionPublicIP'
+    vmStorageAccountType: 'Premium_LRS'
   }
 }
 
-//now create the second resource group
 resource rg2 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: 'rg-lb2-${environmentName}'
   location: location
   tags: tags
 }
-//invoke the resources.bicep file for the second resource group
+
+
 module resources2 './lb2.bicep' = {
   scope: rg2
   name: 'resourcesDeployment2'
@@ -129,7 +143,16 @@ module resources2 './lb2.bicep' = {
     adminUsername: adminUsername
     adminPassword: adminPassword
     vmSize: vmSize
-
+    virtualMachineName: 'gwvm'
+    virtualNetworkName: '${environmentName}-vnet2'
+    networkInterfaceName: 'net-int'
+    ipconfigName: 'ipconfig'
+    publicIPAddressName: '${environmentName}-gwPublicIP'
+    nsgName: '${environmentName}-nsg2'
+    applicationGateWayName: 'myAppGateway'
+    virtualNetworkPrefix: '10.2.0.0/16'
+    subnetPrefix: '10.2.0.0/24'
+    backendSubnetPrefix: '10.2.1.0/24'
   }
 }
 
@@ -139,6 +162,17 @@ resource rg3 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
+//change these together if you want to change locations
+var webAppLocations = [
+  'Central US'
+  'Germany West Central'
+  'UK West'
+]
+var webAppLocationSuffix = [
+  'centralus'
+  'germanywestcentral'
+  'ukwest'
+]
 
 module trafficManager './tm.bicep' = {  
   scope: rg3
@@ -147,8 +181,34 @@ module trafficManager './tm.bicep' = {
     environmentName: environmentName
     tags: tags
     uniqueDnsName: 'tm-${resourceUniquifier}'
+    webAppLocations: webAppLocations
+    webAppLocationSuffix: webAppLocationSuffix
+    appSvcPlanNamePrefix: '${environmentName}-appsvcplan'
+    webAppNamePrefix: '${environmentName}-webapp-${resourceUniquifier}'
   }
 }
 
+resource rg4 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: 'rg-fd-${environmentName}'
+  location: location
+  tags: tags
+}
+
+module frontDoor './fd.bicep' = {
+  scope: rg4
+  name: 'frontDoorDeployment'
+  params: {
+    environmentName: environmentName
+    tags: tags
+    location: location
+    appName: '${environmentName}-fd-app-${resourceUniquifier}'
+    appServicePlanName: '${environmentName}-appServicePlan'
+    appServicePlanSkuName: 'S1'
+    appServicePlanCapacity: 1
+    frontDoorProfileName: take('${environmentName}-frontDoorProfile-${resourceUniquifier}', 60)
+    frontDoorSkuName: 'Standard_AzureFrontDoor'
+    frontDoorEndpointName: take('${environmentName}-fd-endpoint-${resourceUniquifier}', 60)
+  }
+}
 
 output AZURE_KEY_VAULT_NAME string = vault.outputs.name

@@ -54,6 +54,60 @@ param OSVersion string = '2022-datacenter-azure-edition'
 ])
 param securityType string = 'TrustedLaunch'
 
+@description('Name of the load balancer.')
+param lbName string
+
+@description('SKU name for the load balancer.')
+param lbSkuName string
+
+@description('Name of the inbound public IP address for the load balancer.')
+param lbinboundPublicIpAddressName string
+
+@description('Name of the outbound public IP address for the load balancer.')
+param lboutboundPublicIpAddressName string
+
+@description('Name of the inbound frontend for the load balancer.')
+param lbinboundFrontEndName string
+
+@description('Name of the outbound frontend for the load balancer.')
+param lboutbound string
+
+@description('Name of the backend pool for the load balancer.')
+param lbBackendPoolName string
+
+@description('Name of the health probe for the load balancer.')
+param lbProbeName string
+
+@description('Name of the network security group.')
+param nsgName string
+
+@description('Name of the virtual network.')
+param vNetName string
+
+@description('Address prefix for the virtual network.')
+param vNetAddressPrefix string
+
+@description('Name of the subnet in the virtual network.')
+param vNetSubnetName string
+
+@description('Address prefix for the subnet in the virtual network.')
+param vNetSubnetAddressPrefix string
+
+@description('Name of the bastion host.')
+param bastionName string
+
+@description('Name of the bastion subnet.')
+param bastionSubnetName string
+
+@description('Address prefix for the bastion subnet.')
+param vNetBastionSubnetAddressPrefix string
+
+@description('Name of the bastion public IP address.')
+param bastionPublicIPAddressName string
+
+@description('Storage account type for the VM.')
+param vmStorageAccountType string
+
 var securityProfileJson = {
   uefiSettings: {
     secureBootEnabled: true
@@ -61,30 +115,13 @@ var securityProfileJson = {
   }
   securityType: securityType
 }
-var lbName = '${environmentName}-lb'
-var lbSkuName = 'Standard'
-var lbinboundPublicIpAddressName = '${environmentName}-lbinboundPublicIP'
-var lboutboundPublicIpAddressName = '${environmentName}-lboutboundPublicIP'
-var lbinboundFrontEndName = 'LoadBalancerFrontEnd'
-var lboutbound = 'LoadBalancerOutboundIP'
-var lbBackendPoolName = 'LoadBalancerBackEndPool'
-var lbProbeName = 'loadBalancerHealthProbe'
-var nsgName = '${environmentName}-nsg1'
-var vNetName = '${environmentName}-vnet1'
-var vNetAddressPrefix = '10.1.0.0/16'
-var vNetSubnetName = 'BackendSubnet'
-var vNetSubnetAddressPrefix = '10.1.0.0/24'
-var bastionName = '${environmentName}-bastion'
-var bastionSubnetName = 'AzureBastionSubnet'
-var vNetBastionSubnetAddressPrefix = '10.1.1.0/24'
-var bastionPublicIPAddressName = '${environmentName}-bastionPublicIP'
-var vmStorageAccountType = 'Premium_LRS'
-var extensionName = 'GuestAttestation'
-var extensionPublisher = 'Microsoft.Azure.Security.WindowsAttestation'
-var extensionVersion = '1.0'
+
 var maaTenantName = 'GuestAttestation'
 var maaEndpoint = substring('emptyString', 0, 0)
 var ascReportingEndpoint = substring('emptystring', 0, 0)
+var extensionName = 'GuestAttestation'
+var extensionPublisher = 'Microsoft.Azure.Security.WindowsAttestation'
+var extensionVersion = '1.0'
 
 resource project_vm_1_networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = [for i in range(0, 3): {
   name: '${environmentName}-vm${(i + 1)}-networkInterface'

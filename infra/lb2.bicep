@@ -18,17 +18,35 @@ param tags object = {
   'azd-env-name': environmentName
 }
 
+@description('Name prefix for the virtual machine.')
+param virtualMachineName string
 
-var virtualMachineName = 'gwvm'
-var virtualNetworkName = '${environmentName}-vnet2'
-var networkInterfaceName = 'net-int'
-var ipconfigName = 'ipconfig'
-var publicIPAddressName = '${environmentName}-gwPublicIP'
-var nsgName = '${environmentName}-nsg2'
-var applicationGateWayName = 'myAppGateway'
-var virtualNetworkPrefix = '10.2.0.0/16'
-var subnetPrefix = '10.2.0.0/24'
-var backendSubnetPrefix = '10.2.1.0/24'
+@description('Name of the virtual network.')
+param virtualNetworkName string
+
+@description('Name prefix for the network interface.')
+param networkInterfaceName string
+
+@description('Name prefix for the IP configuration.')
+param ipconfigName string
+
+@description('Name prefix for the public IP address.')
+param publicIPAddressName string
+
+@description('Name prefix for the network security group.')
+param nsgName string
+
+@description('Name of the Application Gateway.')
+param applicationGateWayName string
+
+@description('Address prefix for the virtual network.')
+param virtualNetworkPrefix string
+
+@description('Address prefix for the subnet.')
+param subnetPrefix string
+
+@description('Address prefix for the backend subnet.')
+param backendSubnetPrefix string
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = [for i in range(0, 2): {
   name: '${nsgName}${i + 1}'
