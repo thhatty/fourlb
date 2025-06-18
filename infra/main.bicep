@@ -56,6 +56,56 @@ var tags = {
 
 var resourceUniquifier = toLower(uniqueString(subscription().id, environmentName, location))
 
+// Demo Network Configuration Table
+// Each demo's VNet, subnet, and IP configuration are defined here for clarity and reuse
+var demoNetworkConfig = {
+  lb1: {
+    vNetName: '${environmentName}-vnet1'
+    vNetAddressPrefix: '10.1.0.0/16'
+    vNetSubnetName: 'BackendSubnet'
+    vNetSubnetAddressPrefix: '10.1.0.0/24'
+    bastionName: '${environmentName}-bastion'
+    bastionSubnetName: 'AzureBastionSubnet'
+    vNetBastionSubnetAddressPrefix: '10.1.1.0/24'
+    nsgName: '${environmentName}-nsg1'
+    lbinboundPublicIpAddressName: '${environmentName}-lbinboundPublicIP'
+    lboutboundPublicIpAddressName: '${environmentName}-lboutboundPublicIP'
+    bastionPublicIPAddressName: '${environmentName}-bastionPublicIP'
+  }
+  lb2: {
+    vNetName: '${environmentName}-vnet2'
+    vNetAddressPrefix: '10.2.0.0/16'
+    vNetSubnetName: 'BackendSubnet'
+    vNetSubnetAddressPrefix: '10.2.0.0/24'
+    vNetBackendSubnetAddressPrefix: '10.2.1.0/24'
+    nsgName: '${environmentName}-nsg2'
+    publicIpName: '${environmentName}-gwPublicIP'
+    nicName: 'net-int'
+    ipConfigName: 'ipconfig'
+    appGatewayName: 'myAppGateway'
+  }
+  tm: {
+    // Traffic Manager uses web apps in multiple locations, not a VNet
+    webAppLocations: [
+      'Central US'
+      'Germany West Central'
+      'UK West'
+    ]
+    webAppLocationSuffix: [
+      'centralus'
+      'germanywestcentral'
+      'ukwest'
+    ]
+  }
+  fd: {
+    // Front Door demo uses App Service and Front Door, not a VNet
+    appName: '${environmentName}-fd-app-${resourceUniquifier}'
+    appServicePlanName: '${environmentName}-appServicePlan'
+    frontDoorProfileName: take('${environmentName}-frontDoorProfile-${resourceUniquifier}', 60)
+    frontDoorEndpointName: take('${environmentName}-fd-endpoint-${resourceUniquifier}', 60)
+  }
+}
+
 //Common Resource Group for common resources
 resource rgCommon 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: 'rg-common-${environmentName}'
@@ -87,7 +137,6 @@ module vault 'br/public:avm/res/key-vault/vault:0.11.1' = {
   }
 }
 
-
 resource rg1 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: 'rg-lb1-${environmentName}'
   location: location
@@ -107,21 +156,21 @@ module resources './lb1.bicep' = {
     OSVersion: OSVersion
     lbName: '${environmentName}-lb'
     lbSkuName: 'Standard'
-    lbinboundPublicIpAddressName: '${environmentName}-lbinboundPublicIP'
-    lboutboundPublicIpAddressName: '${environmentName}-lboutboundPublicIP'
+    lbinboundPublicIpAddressName: demoNetworkConfig.lb1.lbinboundPublicIpAddressName
+    lboutboundPublicIpAddressName: demoNetworkConfig.lb1.lboutboundPublicIpAddressName
     lbinboundFrontEndName: 'LoadBalancerFrontEnd'
     lboutbound: 'LoadBalancerOutboundIP'
     lbBackendPoolName: 'LoadBalancerBackEndPool'
     lbProbeName: 'loadBalancerHealthProbe'
-    nsgName: '${environmentName}-nsg1'
-    vNetName: '${environmentName}-vnet1'
-    vNetAddressPrefix: '10.1.0.0/16'
-    vNetSubnetName: 'BackendSubnet'
-    vNetSubnetAddressPrefix: '10.1.0.0/24'
-    bastionName: '${environmentName}-bastion'
-    bastionSubnetName: 'AzureBastionSubnet'
-    vNetBastionSubnetAddressPrefix: '10.1.1.0/24'
-    bastionPublicIPAddressName: '${environmentName}-bastionPublicIP'
+    nsgName: demoNetworkConfig.lb1.nsgName
+    vNetName: demoNetworkConfig.lb1.vNetName
+    vNetAddressPrefix: demoNetworkConfig.lb1.vNetAddressPrefix
+    vNetSubnetName: demoNetworkConfig.lb1.vNetSubnetName
+    vNetSubnetAddressPrefix: demoNetworkConfig.lb1.vNetSubnetAddressPrefix
+    bastionName: demoNetworkConfig.lb1.bastionName
+    bastionSubnetName: demoNetworkConfig.lb1.bastionSubnetName
+    vNetBastionSubnetAddressPrefix: demoNetworkConfig.lb1.vNetBastionSubnetAddressPrefix
+    bastionPublicIPAddressName: demoNetworkConfig.lb1.bastionPublicIPAddressName
     vmStorageAccountType: 'Premium_LRS'
   }
 }
@@ -143,16 +192,16 @@ module resources2 './lb2.bicep' = {
     adminUsername: adminUsername
     adminPassword: adminPassword
     vmSize: vmSize
-    virtualMachineName: 'gwvm'
-    virtualNetworkName: '${environmentName}-vnet2'
-    networkInterfaceName: 'net-int'
-    ipconfigName: 'ipconfig'
-    publicIPAddressName: '${environmentName}-gwPublicIP'
-    nsgName: '${environmentName}-nsg2'
-    applicationGateWayName: 'myAppGateway'
-    virtualNetworkPrefix: '10.2.0.0/16'
-    subnetPrefix: '10.2.0.0/24'
-    backendSubnetPrefix: '10.2.1.0/24'
+    vmName: 'gwvm'
+    vNetName: demoNetworkConfig.lb2.vNetName
+    nicName: demoNetworkConfig.lb2.nicName
+    ipConfigName: demoNetworkConfig.lb2.ipConfigName
+    publicIpName: demoNetworkConfig.lb2.publicIpName
+    nsgName: demoNetworkConfig.lb2.nsgName
+    appGatewayName: demoNetworkConfig.lb2.appGatewayName
+    vNetAddressPrefix: demoNetworkConfig.lb2.vNetAddressPrefix
+    vNetSubnetAddressPrefix: demoNetworkConfig.lb2.vNetSubnetAddressPrefix
+    vNetBackendSubnetAddressPrefix: demoNetworkConfig.lb2.vNetBackendSubnetAddressPrefix
   }
 }
 
@@ -162,27 +211,15 @@ resource rg3 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
-//change these together if you want to change locations
-var webAppLocations = [
-  'Central US'
-  'Germany West Central'
-  'UK West'
-]
-var webAppLocationSuffix = [
-  'centralus'
-  'germanywestcentral'
-  'ukwest'
-]
-
-module trafficManager './tm.bicep' = {  
+module trafficManager './tm.bicep' = {
   scope: rg3
   name: 'trafficManagerDeployment'
   params: {
     environmentName: environmentName
     tags: tags
     uniqueDnsName: 'tm-${resourceUniquifier}'
-    webAppLocations: webAppLocations
-    webAppLocationSuffix: webAppLocationSuffix
+    webAppLocations: demoNetworkConfig.tm.webAppLocations
+    webAppLocationSuffix: demoNetworkConfig.tm.webAppLocationSuffix
     appSvcPlanNamePrefix: '${environmentName}-appsvcplan'
     webAppNamePrefix: '${environmentName}-webapp-${resourceUniquifier}'
   }
@@ -201,13 +238,13 @@ module frontDoor './fd.bicep' = {
     environmentName: environmentName
     tags: tags
     location: location
-    appName: '${environmentName}-fd-app-${resourceUniquifier}'
-    appServicePlanName: '${environmentName}-appServicePlan'
+    appName: demoNetworkConfig.fd.appName
+    appServicePlanName: demoNetworkConfig.fd.appServicePlanName
     appServicePlanSkuName: 'S1'
     appServicePlanCapacity: 1
-    frontDoorProfileName: take('${environmentName}-frontDoorProfile-${resourceUniquifier}', 60)
+    frontDoorProfileName: demoNetworkConfig.fd.frontDoorProfileName
     frontDoorSkuName: 'Standard_AzureFrontDoor'
-    frontDoorEndpointName: take('${environmentName}-fd-endpoint-${resourceUniquifier}', 60)
+    frontDoorEndpointName: demoNetworkConfig.fd.frontDoorEndpointName
   }
 }
 

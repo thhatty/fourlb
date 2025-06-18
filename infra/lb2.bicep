@@ -19,34 +19,34 @@ param tags object = {
 }
 
 @description('Name prefix for the virtual machine.')
-param virtualMachineName string
+param vmName string
 
 @description('Name of the virtual network.')
-param virtualNetworkName string
+param vNetName string
 
 @description('Name prefix for the network interface.')
-param networkInterfaceName string
+param nicName string
 
 @description('Name prefix for the IP configuration.')
-param ipconfigName string
+param ipConfigName string
 
 @description('Name prefix for the public IP address.')
-param publicIPAddressName string
+param publicIpName string
 
 @description('Name prefix for the network security group.')
 param nsgName string
 
 @description('Name of the Application Gateway.')
-param applicationGateWayName string
+param appGatewayName string
 
 @description('Address prefix for the virtual network.')
-param virtualNetworkPrefix string
+param vNetAddressPrefix string
 
 @description('Address prefix for the subnet.')
-param subnetPrefix string
+param vNetSubnetAddressPrefix string
 
 @description('Address prefix for the backend subnet.')
-param backendSubnetPrefix string
+param vNetBackendSubnetAddressPrefix string
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = [for i in range(0, 2): {
   name: '${nsgName}${i + 1}'
@@ -54,25 +54,12 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = [for i in ra
   tags: tags
   properties: {
     securityRules: [
-      {
-        name: 'RDP'
-        properties: {
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '3389'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 300
-          direction: 'Inbound'
-        }
-      }
     ]
   }
 }]
 
 resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2023-09-01' = [for i in range(0, 3): {
-  name: '${publicIPAddressName}${i}'
+  name: '${publicIpName}${i}'
   location: location
   tags: tags
   sku: {
@@ -86,20 +73,20 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2023-09-01' = [for
 }]
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
-  name: virtualNetworkName
+  name: vNetName
   location: location
   tags: tags
   properties: {
     addressSpace: {
       addressPrefixes: [
-        virtualNetworkPrefix
+        vNetAddressPrefix
       ]
     }
     subnets: [
       {
         name: 'myAGSubnet'
         properties: {
-          addressPrefix: subnetPrefix
+          addressPrefix: vNetSubnetAddressPrefix
           privateEndpointNetworkPolicies: 'Enabled'
           privateLinkServiceNetworkPolicies: 'Enabled'
         }
@@ -107,7 +94,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
       {
         name: 'myBackendSubnet'
         properties: {
-          addressPrefix: backendSubnetPrefix
+          addressPrefix: vNetBackendSubnetAddressPrefix
           privateEndpointNetworkPolicies: 'Enabled'
           privateLinkServiceNetworkPolicies: 'Enabled'
         }
@@ -119,7 +106,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
 }
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-09-01' = [for i in range(0, 2): {
-  name: '${virtualMachineName}${i + 1}'
+  name: '${vmName}${i + 1}'
   location: location
   tags: tags
   properties: {
@@ -144,7 +131,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-09-01' = [for i 
       }
     }
     osProfile: {
-      computerName: '${virtualMachineName}${i + 1}'
+      computerName: '${vmName}${i + 1}'
       adminUsername: adminUsername
       adminPassword: adminPassword
       windowsConfiguration: {
@@ -156,7 +143,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-09-01' = [for i 
     networkProfile: {
       networkInterfaces: [
         {
-          id: resourceId('Microsoft.Network/networkInterfaces', '${networkInterfaceName}${i + 1}')
+          id: resourceId('Microsoft.Network/networkInterfaces', '${nicName}${i + 1}')
         }
       ]
     }
@@ -167,7 +154,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2023-09-01' = [for i 
 }]
 
 resource virtualMachine_IIS 'Microsoft.Compute/virtualMachines/extensions@2023-09-01' = [for i in range(0, 2): {
-  name: '${virtualMachineName}${(i + 1)}/IIS'
+  name: '${vmName}${(i + 1)}/IIS'
   location: location
   
   properties: {
@@ -185,7 +172,7 @@ resource virtualMachine_IIS 'Microsoft.Compute/virtualMachines/extensions@2023-0
 }]
 
 resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-09-01' = {
-  name: applicationGateWayName
+  name: appGatewayName
   location: location
   tags: tags
   properties: {
@@ -198,7 +185,7 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-09-01' =
         name: 'appGatewayIpConfig'
         properties: {
           subnet: {
-            id: resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, 'myAGSubnet')
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', vNetName, 'myAGSubnet')
           }
         }
       }
@@ -209,7 +196,7 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-09-01' =
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: resourceId('Microsoft.Network/publicIPAddresses', '${publicIPAddressName}0')
+            id: resourceId('Microsoft.Network/publicIPAddresses', '${publicIpName}0')
           }
         }
       }
@@ -245,10 +232,10 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-09-01' =
         name: 'myListener'
         properties: {
           frontendIPConfiguration: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', applicationGateWayName, 'appGwPublicFrontendIp')
+            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGatewayName, 'appGwPublicFrontendIp')
           }
           frontendPort: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', applicationGateWayName, 'port_80')
+            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', appGatewayName, 'port_80')
           }
           protocol: 'Http'
           requireServerNameIndication: false
@@ -262,13 +249,13 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-09-01' =
           ruleType: 'Basic'
           priority: 1
           httpListener: {
-            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', applicationGateWayName, 'myListener')
+            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGatewayName, 'myListener')
           }
           backendAddressPool: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', applicationGateWayName, 'myBackendPool')
+            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', appGatewayName, 'myBackendPool')
           }
           backendHttpSettings: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', applicationGateWayName, 'myHTTPSetting')
+            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', appGatewayName, 'myHTTPSetting')
           }
         }
       }
@@ -286,26 +273,26 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-09-01' =
 }
 
 resource networkInterface 'Microsoft.Network/networkInterfaces@2023-09-01' = [for i in range(0, 2): {
-  name: '${networkInterfaceName}${i + 1}'
+  name: '${nicName}${i + 1}'
   location: location
   tags: tags
   properties: {
     ipConfigurations: [
       {
-        name: '${ipconfigName}${i + 1}'
+        name: '${ipConfigName}${i + 1}'
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: resourceId('Microsoft.Network/publicIPAddresses', '${publicIPAddressName}${i + 1}')
+            id: resourceId('Microsoft.Network/publicIPAddresses', '${publicIpName}${i + 1}')
           }
           subnet: {
-            id: resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, 'myBackendSubnet')
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', vNetName, 'myBackendSubnet')
           }
           primary: true
           privateIPAddressVersion: 'IPv4'
           applicationGatewayBackendAddressPools: [
             {
-              id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', applicationGateWayName, 'myBackendPool')
+              id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', appGatewayName, 'myBackendPool')
             }
           ]
         }

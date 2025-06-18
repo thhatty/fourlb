@@ -1,6 +1,6 @@
 targetScope = 'resourceGroup'
 
-@description('The name of the environment for resource naming and tagging.')
+@description('Specifies a project name that is used for generating resource names.')
 param environmentName string
 
 @description('Resource tags to apply to all resources.')
@@ -9,29 +9,17 @@ param tags object
 @description('Relative DNS profile name for the traffic manager profile, resulting FQDN will be <uniqueDnsName>.trafficmanager.net, and it must be globally unique.')
 param uniqueDnsName string
 
-
-
-//change these in main for different locations 
 @description('List of locations to deploy web apps to.')
-param webAppLocations array = [
-  'Central US'
-  'Germany West Central'
-  'UK West'
-]
+param webAppLocations array
 
-//change these in main for different locations 
 @description('Suffixes for each web app location, must match order of webAppLocations.')
-param webAppLocationSuffix array = [
-  'centralus'
-  'germanywestcentral'
-  'ukwest'
-]
+param webAppLocationSuffix array
 
 @description('Prefix for App Service Plan names.')
-param appSvcPlanNamePrefix string = 'TMLabAppSvcPlan'
+param appSvcPlanNamePrefix string
 
 @description('Prefix for Web App names.')
-param webAppNamePrefix string = 'TMLabWebApp-${take(uniqueString(resourceGroup().id,subscription().subscriptionId),3)}-'
+param webAppNamePrefix string
 
 @description('Repository URL for source control.')
 param repoURL string = 'https://github.com/pdtit/TrafficMgr'

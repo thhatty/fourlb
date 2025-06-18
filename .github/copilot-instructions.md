@@ -17,3 +17,11 @@ Root/
 └── azure.yaml                 [ Describes the app and type of Azure resources ]
 ├── README.md                  [ Overview of the demo and basic azd commands ]
 ```
+
+This is a deployment for 4 different demos, each deployed into its own resource group from the #main.bicep. 
+The demos are named:
+
+Azure Load Balancer - #lb1.bicep
+Azure App Gateway - #lb2.bicep
+Azure Traffic Manager - #tm.bicep
+Azure Front Door - #fd.bicep

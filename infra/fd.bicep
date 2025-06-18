@@ -1,14 +1,17 @@
-@description('The name of the resource group in which to deploy the resources.')
-param environmentName string = 'default-env'  
+@description('Specifies a project name that is used for generating resource names.')
+param environmentName string
 
-@description('Resource tags to apply to resource requiring unique names')
-param resourceUniquifier string = uniqueString(subscription().id, environmentName, location)
+@description('Resource tags to apply to all resources.')
+param tags object
 
 @description('The location into which regionally scoped resources should be deployed. Note that Front Door is a global resource.')
 param location string = resourceGroup().location
 
 @description('The name of the App Service application to create. This must be globally unique.')
-param appName string = '${environmentName}-fd-app-${resourceUniquifier}'
+param appName string
+
+@description('The name of the App Service plan to create.')
+param appServicePlanName string
 
 @description('The name of the SKU to use when creating the App Service plan.')
 param appServicePlanSkuName string = 'S1'
@@ -16,8 +19,8 @@ param appServicePlanSkuName string = 'S1'
 @description('The number of worker instances of your App Service plan that should be provisioned.')
 param appServicePlanCapacity int = 1
 
-@description('The name of the Front Door endpoint to create. This must be globally unique.')
-param frontDoorEndpointName string = '${environmentName}-fd-endpoint-${resourceUniquifier}'
+@description('The name of the Front Door profile to create. This must be globally unique.')
+param frontDoorProfileName string
 
 @description('The name of the SKU to use when creating the Front Door profile.')
 @allowed([
@@ -26,14 +29,8 @@ param frontDoorEndpointName string = '${environmentName}-fd-endpoint-${resourceU
 ])
 param frontDoorSkuName string = 'Standard_AzureFrontDoor'
 
-@description('Resource tags to apply to resources')
-param tags object
-
-@description('The name of the Front Door profile to create. This must be globally unique.')
-param frontDoorProfileName string
-
-@description('The name of the App Service plan to create.')
-param appServicePlanName string
+@description('The name of the Front Door endpoint to create. This must be globally unique.')
+param frontDoorEndpointName string
 
 @description('Repository URL for source control.')
 param repoURL string = 'https://github.com/pdtit/TrafficMgr'
