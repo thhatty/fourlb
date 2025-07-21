@@ -72,7 +72,7 @@ var demoNetworkConfig = {
     lboutboundPublicIpAddressName: '${environmentName}-lboutboundPublicIP'
     bastionPublicIPAddressName: '${environmentName}-bastionPublicIP'
   }
-  lb2: {
+  agw: {
     vNetName: '${environmentName}-vnet2'
     vNetAddressPrefix: '10.2.0.0/16'
     vNetSubnetName: 'BackendSubnet'
@@ -176,13 +176,13 @@ module resources './lb1.bicep' = {
 }
 
 resource rg2 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: 'rg-lb2-${environmentName}'
+  name: 'rg-agw-${environmentName}'
   location: location
   tags: tags
 }
 
 
-module resources2 './lb2.bicep' = {
+module resources2 './agw.bicep' = {
   scope: rg2
   name: 'resourcesDeployment2'
   params: {
@@ -193,15 +193,15 @@ module resources2 './lb2.bicep' = {
     adminPassword: adminPassword
     vmSize: vmSize
     vmName: 'gwvm'
-    vNetName: demoNetworkConfig.lb2.vNetName
-    nicName: demoNetworkConfig.lb2.nicName
-    ipConfigName: demoNetworkConfig.lb2.ipConfigName
-    publicIpName: demoNetworkConfig.lb2.publicIpName
-    nsgName: demoNetworkConfig.lb2.nsgName
-    appGatewayName: demoNetworkConfig.lb2.appGatewayName
-    vNetAddressPrefix: demoNetworkConfig.lb2.vNetAddressPrefix
-    vNetSubnetAddressPrefix: demoNetworkConfig.lb2.vNetSubnetAddressPrefix
-    vNetBackendSubnetAddressPrefix: demoNetworkConfig.lb2.vNetBackendSubnetAddressPrefix
+    vNetName: demoNetworkConfig.agw.vNetName
+    nicName: demoNetworkConfig.agw.nicName
+    ipConfigName: demoNetworkConfig.agw.ipConfigName
+    publicIpName: demoNetworkConfig.agw.publicIpName
+    nsgName: demoNetworkConfig.agw.nsgName
+    appGatewayName: demoNetworkConfig.agw.appGatewayName
+    vNetAddressPrefix: demoNetworkConfig.agw.vNetAddressPrefix
+    vNetSubnetAddressPrefix: demoNetworkConfig.agw.vNetSubnetAddressPrefix
+    vNetBackendSubnetAddressPrefix: demoNetworkConfig.agw.vNetBackendSubnetAddressPrefix
   }
 }
 
