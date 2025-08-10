@@ -93,7 +93,7 @@ var demoNetworkConfig = {
     ]
     webAppLocationSuffix: [
       'centralus'
-      'germanywestcentral'
+      'centralindia'
       'ukwest'
     ]
   }

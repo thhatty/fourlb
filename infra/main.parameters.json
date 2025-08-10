@@ -21,7 +21,13 @@
         "type": "securestring"
       }
     },
-
+    "copyImages": {
+        "value": "true"
+      },
+      "principalId": {
+        "value": "${AZURE_PRINCIPAL_ID}"
+    },
+    
     "location": {
       "value": "${AZURE_LOCATION}"
     },

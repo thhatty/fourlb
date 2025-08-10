@@ -55,7 +55,23 @@ LOAD BALANCER DEMO
 
 
 APPLICATION GATEWAY DEMO
+
+1) Navigate to the **Azure Application Gateway** resource. Under the **Settings** blade, go to the **Backend Pools**. There are 3 VMs in the backend pool. 
+2) Navigate to the **Listeners** setting. Show the types of listeners, we have a basic for one site, but you could show multi-site based on the hostname. If you go to create a listener that is HTTPS, you'd need a certificate to decrypt the HTTPS data. 
+3) Navigate to the **Rules** setting. Showcase how the rule links the listeners to the backend (or redirects)
+4) You can repeat the demo found in Step 3 of the Load Balance demo to showcase the load balancing aspect.
+5) You can also showcase the **Rewrites** section of settings, and talk about how this tool can be used to add, modify, or remove http request or response headers to improve security, add redirects, among other examples.
    
+
+TRAFFIC MANAGER GUIDE
+
+This demo is taken from a github by https://github.com/petender, namely his https://github.com/petender/azd-trafficmgr/blob/main/demoguide/demoguide.md demo. I recommend to run his demo, showcasing the ability to turn off one of the app services and showcase the way Traffic Manager redirects traffic. 
+
+Additional demos-
+1) Navigate into the Traffic Manager settings, and go to **Configuration**, under the Settings blade. See the routing method is currently set as Priority, which is why if you go to the **Endpoints** blade, you'll see the first target is UK West, then India Central, then US. In **Configuration**, change the Routing Method from "Priority" to "Weighted". Now, you'll be able to go back to the **Endpoints** tab and set a weight for each one of the endpoints. For example, set Central US to 10, India to 10, and UK to 1. Now, navigating back to the Traffic Manager IP, you should likely get sent to either India or US, and occasionally get sent to the German endpoint. 
+2) Back in the **Configuration**, and switch the Routing Method to "Performance". Now, you will not be able to make any adjustments to the routing of the **Endpoints**, and your end users will get directed to the one with the lowest latency from their location, based off of the local DNS service that they used to get to the Traffic Manager. 
+3) If you want to go even further, you could showcase the Geographic routing method, with Nested Profiles. This would involve creating 2 more Traffic Manager Profiles (For example, one for the UK as a Geographic routing, and one for the other 2 app services as a weighted). These two new Traffic Manager profiles could then be added as "Nested Profiles" in the main TMProfile, and you could show an example of how users from the UK are always directed to the UK app service, whereas anyone else in the world would be weighted between the US and India.
+
 ***
 <div style="background: lightgray; 
             font-size: 14px; 
