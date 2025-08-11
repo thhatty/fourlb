@@ -54,8 +54,12 @@ param deployBastion bool = false
 @description('The current user id. Will be supplied by azd')
 param currentUserId string = newGuid()
 
+@description('Id of the user or app to assign application roles')
+param principalId string
+
 var tags = {
   'azd-env-name': environmentName
+  'securitycontrol' : 'ignore'
 }
 
 var resourceUniquifier = toLower(uniqueString(subscription().id, environmentName, location))
@@ -236,20 +240,16 @@ resource rg4 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
-module frontDoor './fd.bicep' = {
+//invoke the resources.bicep file
+module fdcdn './fdcdn.bicep' = {
   scope: rg4
-  name: 'frontDoorDeployment'
+  name: 'resourcesDeployment'
   params: {
-    environmentName: environmentName
-    tags: tags
     location: location
-    appName: demoNetworkConfig.fd.appName
-    appServicePlanName: demoNetworkConfig.fd.appServicePlanName
-    appServicePlanSkuName: 'S1'
-    appServicePlanCapacity: 1
-    frontDoorProfileName: demoNetworkConfig.fd.frontDoorProfileName
-    frontDoorSkuName: 'Standard_AzureFrontDoor'
-    frontDoorEndpointName: demoNetworkConfig.fd.frontDoorEndpointName
+    tags: tags
+    environmentName: environmentName
+    principalId: principalId
+
   }
 }
 
