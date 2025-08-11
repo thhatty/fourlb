@@ -19,6 +19,7 @@ param adminPassword string = newGuid()
 @description('Size of the virtual machine')
 param vmSize string = 'Standard_B2ats_v2'
 
+
 @description('The Windows version for the VM. This will pick a fully patched image of this given Windows version.')
 @allowed([
   '2016-datacenter-gensecond'
@@ -46,6 +47,9 @@ param vmSize string = 'Standard_B2ats_v2'
   '2022-datacenter-smalldisk-g2'
 ])
 param OSVersion string = '2022-datacenter-azure-edition'
+
+@description('Whether to deploy Azure Bastion resources')
+param deployBastion bool = false
 
 @description('The current user id. Will be supplied by azd')
 param currentUserId string = newGuid()
@@ -172,6 +176,7 @@ module resources './lb1.bicep' = {
     vNetBastionSubnetAddressPrefix: demoNetworkConfig.lb1.vNetBastionSubnetAddressPrefix
     bastionPublicIPAddressName: demoNetworkConfig.lb1.bastionPublicIPAddressName
     vmStorageAccountType: 'Premium_LRS'
+    deployBastion: deployBastion
   }
 }
 

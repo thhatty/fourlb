@@ -105,8 +105,12 @@ param vNetBastionSubnetAddressPrefix string
 @description('Name of the bastion public IP address.')
 param bastionPublicIPAddressName string
 
+
 @description('Storage account type for the VM.')
 param vmStorageAccountType string
+
+@description('Whether to deploy Azure Bastion resources')
+param deployBastion bool = false
 
 var securityProfileJson = {
   uefiSettings: {
@@ -251,7 +255,7 @@ resource projectName_vm_1_3_GuestAttestation 'Microsoft.Compute/virtualMachines/
 
 
 
-resource vNetName_bastionSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' = {
+resource vNetName_bastionSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' = if (deployBastion) {
   parent: vNet
   name: bastionSubnetName
   properties: {
@@ -271,7 +275,7 @@ resource vNetName_vNetSubnetName 'Microsoft.Network/virtualNetworks/subnets@2021
   }
 }
 
-resource bastion 'Microsoft.Network/bastionHosts@2021-08-01' = {
+resource bastion 'Microsoft.Network/bastionHosts@2021-08-01' = if (deployBastion) {
   name: bastionName
   location: location
   properties: {
@@ -292,7 +296,7 @@ resource bastion 'Microsoft.Network/bastionHosts@2021-08-01' = {
   }
 }
 
-resource bastionPublicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
+resource bastionPublicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = if (deployBastion) {
   name: bastionPublicIPAddressName
   location: location
   sku: {
