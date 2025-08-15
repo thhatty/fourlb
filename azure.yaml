@@ -6,8 +6,9 @@ metadata:
     template: tdd-lb-collection@0.0.1
 
 infra:
-   provider: "bicep"
-   resourceGroup: rg-fd-${AZURE_ENV_NAME}
+  provider: "bicep"
+  resourceGroup: rg-common-${AZURE_ENV_NAME}
+  
    
 
 services:
