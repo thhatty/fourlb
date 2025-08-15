@@ -1,8 +1,4 @@
-parameters:
-    deployBastion:
-        type: boolean
-        description: "Do you want to deploy Azure Bastion? (yes/no)"
-        default: false
+
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
 name: tdd-lb-collection
@@ -11,3 +7,11 @@ metadata:
 
 infra:
    provider: "bicep"
+   resourceGroup: rg-fd-${AZURE_ENV_NAME}
+   
+
+services:
+  webapp:
+    project: ./WebSite
+    host: appservice
+    language: dotnet

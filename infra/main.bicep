@@ -96,7 +96,7 @@ var demoNetworkConfig = {
     // Traffic Manager uses web apps in multiple locations, not a VNet
     webAppLocations: [
       'Central US'
-      'Germany West Central'
+      'Central India'
       'UK West'
     ]
     webAppLocationSuffix: [
@@ -254,3 +254,6 @@ module fdcdn './fdcdn.bicep' = {
 }
 
 output AZURE_KEY_VAULT_NAME string = vault.outputs.name
+output WEBAPP_SERVICE_NAME string = fdcdn.outputs.AppServiceName
+output BLOB_BASE_IMAGE_URL string = fdcdn.outputs.BlobImageBaseUrl
+output CDN_BASE_IMAGE_URL string = fdcdn.outputs.CDNImageBaseUrl
