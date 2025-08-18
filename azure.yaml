@@ -16,3 +16,4 @@ services:
     project: ./WebSite
     host: appservice
     language: dotnet
+    resourceGroup: rg-fd-${AZURE_ENV_NAME}
