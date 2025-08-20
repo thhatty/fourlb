@@ -49,7 +49,7 @@ param vmSize string = 'Standard_B2ats_v2'
 param OSVersion string = '2022-datacenter-azure-edition'
 
 @description('Whether to deploy Azure Bastion resources')
-param deployBastion bool = false
+param deployBastion bool = true
 
 @description('The current user id. Will be supplied by azd')
 param currentUserId string = newGuid()
