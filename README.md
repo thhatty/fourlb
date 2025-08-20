@@ -23,7 +23,7 @@ Each demo provisions a set of Azure resources to illustrate core networking and 
    ```
 2. Initialize the deployment with this template:
    ```sh
-   azd init -t <path-or-repo-to-this-template>
+   azd init -t https://github.com/thhatty/fourlb
    ```
 3. Deploy the resources:
    ```sh
@@ -42,6 +42,9 @@ After deployment, you can demonstrate the following scenarios:
 
 ### 3. Azure Traffic Manager Demo
 - Use the Traffic Manager DNS name to observe global traffic distribution and failover.
+
+- ### 3. Azure Front Door Demo
+- Use the Front Door to observe CDN Caching.
 
 Refer to the `demoguide/demoguide.md` for detailed, step-by-step instructions for each demo.
 
@@ -68,6 +71,12 @@ Refer to the `demoguide/demoguide.md` for detailed, step-by-step instructions fo
 - Traffic Manager Profile
 - App Service Plans (multiple regions)
 - Web Apps (multiple regions)
+
+### Azure Front Door Deployment (Resource Group: rg-fd-{env})
+- Front Door Profile
+- Storage Account
+- App Service
+
 
 ## Contributing
 Contributions to enhance these demos are welcome. Please submit issues and pull requests.
