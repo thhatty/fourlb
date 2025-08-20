@@ -110,7 +110,7 @@ param bastionPublicIPAddressName string
 param vmStorageAccountType string
 
 @description('Whether to deploy Azure Bastion resources')
-param deployBastion bool = false
+param deployBastion bool = true
 
 var securityProfileJson = {
   uefiSettings: {
