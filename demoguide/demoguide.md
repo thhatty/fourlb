@@ -37,7 +37,6 @@ This scenario deploys 5 different resource groups to your environment: 1 resourc
 - Load Balancing Solutions (LB, App G/W, TM, FD)
 - Azure Bastion
 
-PUT IMAGE OF RESOURCES HERE
 <img width="398" height="1031" alt="image" src="https://github.com/user-attachments/assets/8a179112-a732-4c27-92ec-173e3c258a43" />
 
 
